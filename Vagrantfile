@@ -45,15 +45,28 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   #   sudo apt-get install -y apache2
   # SHELL
 
-  # Provisioning only on last maschine but for all:
-  config.vm.provision "ansible" do |ansible|
-    ansible.groups = {
-      "piwik-dbs" => ["piwik_db2"],
-      "piwik-workers" => ["piwik_master2", "piwik_worker2"],
-      "piwik-masters" => ["piwik_master2"],
-    }
-    ansible.verbose = ""
-    ansible.limit = "all"
-    ansible.playbook = "lmu.ansible.playbooks/base-preseed.yml"
+
+  config.vm.define "special" do |special|
+    special.vm.provider "virtualbox" do |vb|
+      vb.name = "Special"
+      vb.memory = 4096
+      vb.cpus = 4
+    end
+    special.vm.network :private_network, ip: "192.168.1.5"
+
+    # Provisioning only on last maschine but for all:
+    config.vm.provision "ansible" do |ansible|
+      ansible.groups = {
+        "webfrontends" => ["special"],
+        "webproxies" => ["special"]
+        "piwik-dbs" => ["piwik_db2"],
+        "piwik-workers" => ["piwik_master2", "piwik_worker2"],
+        "piwik-masters" => ["piwik_master2"],
+      }
+      ansible.verbose = ""
+      ansible.limit = "all"
+      #ansible.playbook = "lmu.ansible.playbooks/base-preseed.yml"
+      ansible.playbook = "lmu.ansible.playbooks/iuk_fullstack.yml"
+    end
   end
 end

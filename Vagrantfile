@@ -17,12 +17,16 @@ AUTOSTART_CLUSTER = false
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "canonical/trusty64"
-  config.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+  #config.vm.box = "ubuntu/trusty64"
+  #config.vm.box = "ubuntu/xenial64"
+  config.vm.box = "centos/7"
 
-  config.vm.define "piwik-db2.verwaltung.uni-muenchen.de", autostart: AUTOSTART_CLUSTER do |maschine|
-    maschine.vm.provider "virtualbox" do |vb|
-      vb.name = "Piwik-DB2"
+  config.ssh.forward_agent = true
+  #config.ssh.private_key_path = "~/.ssh/id_rsa"
+
+  config.vm.define "piwik-db.zuv.uni-muenchen.de", autostart: AUTOSTART_CLUSTER do |node|
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "Piwik-DB"
       vb.memory = 4096
       vb.cpus = 4
       vb.customize ["modifyvm", :id,
@@ -30,31 +34,31 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                     "--groups", "/Vagrant/LMU/Piwik"
                    ]
     end
-    maschine.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".199"
+    node.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".199"
     if USE_PUBLIC_NETWORK
-      maschine.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".199"
+      node.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".199"
     end
   end
 
-  config.vm.define "piwik-master2.verwaltung.uni-muenchen.de", autostart: AUTOSTART_CLUSTER do |maschine|
-    maschine.vm.provider "virtualbox" do |vb|
-      vb.name = "Piwik-Master2"
+  config.vm.define "piwik-master.zuv.uni-muenchen.de", autostart: AUTOSTART_CLUSTER do |node|
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "Piwik-Master"
       vb.memory = 4096
       vb.cpus = 4
       vb.customize ["modifyvm", :id,
-                          "--cpuexecutioncap", "50",
-                          "--groups", "/Vagrant/LMU/Piwik"
-                         ]
+                    "--cpuexecutioncap", "50",
+                    "--groups", "/Vagrant/LMU/Piwik"
+                   ]
     end
-    maschine.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".195"
+    node.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".195"
     if USE_PUBLIC_NETWORK
-      maschine.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".195"
+      node.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".195"
     end
   end
 
-  config.vm.define "piwik-worker2.verwaltung.uni-muenchen.de", autostart: AUTOSTART_CLUSTER do |maschine|
-    maschine.vm.provider "virtualbox" do |vb|
-      vb.name = "Piwik-Worker2"
+  config.vm.define "piwik-worker.zuv.uni-muenchen.de", autostart: AUTOSTART_CLUSTER do |node|
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "Piwik-Worker"
       vb.memory = 2048
       vb.cpus = 2
       vb.customize ["modifyvm", :id,
@@ -62,14 +66,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                     "--groups", "/Vagrant/LMU/Piwik"
                    ]
     end
-    maschine.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".196"
+    node.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".196"
     if USE_PUBLIC_NETWORK
-      maschine.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".196"
+      node.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".196"
     end
   end
 
-  config.vm.define "special.verwaltung.uni-muenchen.de", autostart: AUTOSTART_CLUSTER do |maschine|
-    maschine.vm.provider "virtualbox" do |vb|
+  config.vm.define "special.zuv.uni-muenchen.de", autostart: AUTOSTART_CLUSTER do |node|
+    node.vm.provider "virtualbox" do |vb|
       vb.name = "Special"
       vb.memory = 4096
       vb.cpus = 4
@@ -78,17 +82,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                     "--groups", "/Vagrant/LMU"
                    ]
     end
-    maschine.vm.network :private_network, ip: "192.168.1.5"
-    maschine.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".200"
+    node.vm.network :private_network, ip: "192.168.1.5"
+    node.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".200"
     if USE_PUBLIC_NETWORK
-      maschine.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".200"
+      node.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".200"
     end
   end
 
 
-  config.vm.define "piwiktest2.verwaltung.uni-muenchen.de", primary: true do |maschine|
-    maschine.vm.provider "virtualbox" do |vb|
-      vb.name = "Piwiktest2"
+  config.vm.define "piwiktest.zuv.uni-muenchen.de", primary: true do |node|
+    node.vm.provider "virtualbox" do |vb|
+      vb.name = "Piwik-Test"
       vb.memory = 8192
       vb.cpus = 8
       vb.customize ["modifyvm", :id,
@@ -96,41 +100,45 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                     "--groups", "/Vagrant/LMU/Piwik"
                    ]
     end
-    maschine.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".85"
+    node.vm.network :private_network, ip: PRIVATE_NETWORK_BASE + ".85"
     if USE_PUBLIC_NETWORK
-      maschine.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".85"
+      node.vm.network :public_network, ip: PUBLIC_NETWORK_BASE + ".85"
     end
   end
 
-
-  if ENV['OS'] != "Windows_NT" # Windows don't support ansible,
-    # Provisioning only on last maschine but for all:
-    config.vm.provision "ansible" do |ansible|
-      ansible.groups = {
-        "piwik-production-dbs" => ["piwik-db2.verwaltung.uni-muenchen.de"],
-        "piwik-production-workers"  => ["piwik-master2.verwaltung.uni-muenchen.de",
-                                        "piwik-worker2.verwaltung.uni-muenchen.de"],
-        "piwik-production-masters"  => ["piwik-master2.verwaltung.uni-muenchen.de"],
-        "piwik-production-frontends" => ["special.verwaltung.uni-muenchen.de"],
-        "piwik-test-dbs" => ["piwiktest2.verwaltung.uni-muenchen.de"],
-        "piwik-test-workers"  => ["piwiktest2.verwaltung.uni-muenchen.de"],
-        "piwik-test-masters"  => ["piwiktest2.verwaltung.uni-muenchen.de"],
-        "piwik-test-frontends" => ["piwiktest2.verwaltung.uni-muenchen.de"],
-        "piwik-dbs:children" => ["piwik-production-dbs", "piwik-test-dbs"],
-        "piwik-workers:children" => ["piwik-production-workers", "piwik-test-workers"],
-        "piwik-masters:children" => ["piwik-production-masters", "piwik-test-masters"],
-        "piwik-frontends:children" => ["piwik-production-frontends", "piwik-test-frontends"],
-        "piwik:children" => ["piwik-dbs", "piwik-masters", "piwik-workers"],
-      }
-      #ansible.verbose = "vvvv"
-      ansible.verbose = ""
-      #ansible.start_at_task = "Install Piwik"
-      ansible.limit = "all"
-      #ansible.tags = ["setup", "configuration", "update"]
-      #ansible.skip_tags = ["update"]
-      #ansible.playbook = "lmu.ansible.playbooks/base-preseed.yml"
-      ansible.playbook = "lmu.ansible.playbooks/piwik.yml"
-      #ansible.ask_vault_pass = true
-    end
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "lmu.ansible.playbooks/base-preseed.yml"
+    #ansible.verbose = "vvv"
   end
+
+  # config.vm.provision "ansible" do |ansible|
+  #   ansible.playbook = "lmu.ansible.playbooks/base-preseed.yml"
+  #   #ansible.playbook = "lmu.ansible.playbooks/piwik.yml"
+  #   ansible.groups = {
+  #     "piwik-production-dbs" => ["piwik-db.zuv.uni-muenchen.de"],
+  #     "piwik-production-workers"  => ["piwik-master.zuv.uni-muenchen.de",
+  #                                     "piwik-worker.zuv.uni-muenchen.de"],
+  #     "piwik-production-masters"  => ["piwik-master.zuv.uni-muenchen.de"],
+  #     "piwik-production-frontends" => ["special.zuv.uni-muenchen.de"],
+  #     "piwik-test-dbs" => ["piwiktest.zuv.uni-muenchen.de"],
+  #     "piwik-test-workers"  => ["piwiktest.zuv.uni-muenchen.de"],
+  #     "piwik-test-masters"  => ["piwiktest.zuv.uni-muenchen.de"],
+  #     "piwik-test-frontends" => ["piwiktest.zuv.uni-muenchen.de"],
+  #     "piwik-dbs:children" => ["piwik-production-dbs", "piwik-test-dbs"],
+  #     "piwik-workers:children" => ["piwik-production-workers", "piwik-test-workers"],
+  #     "piwik-masters:children" => ["piwik-production-masters", "piwik-test-masters"],
+  #     "piwik-frontends:children" => ["piwik-production-frontends", "piwik-test-frontends"],
+  #     "piwik:children" => ["piwik-dbs", "piwik-masters", "piwik-workers"],
+  #   }
+  #   #ansible.verbose = "vvvv"
+  #   #ansible.verbose = "vvv"
+  #   #ansible.verbose = "vv"
+  #   #ansible.verbose = "v"
+  #   ansible.verbose = ""
+  #   ansible.limit = "all"
+  #   #ansible.tags = ["setup", "configuration", "update"]
+  #   #ansible.skip_tags = ["update"]
+  #   #ansible.start_at_task = "Install Piwik"
+  #   #ansible.ask_vault_pass = true
+  # end
 end
